@@ -1,0 +1,14 @@
+# 打包配置：让 src/ 布局的包可以被 pip install -e . 以"可编辑模式"安装
+# 安装后，在任何工作目录下都能 import office_agent，开发与生产行为一致
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "office-agent"
+version = "0.1.0"
+description = "企业办公自动化 Agent：RAG 问答 / 会议纪要 / 自动周报"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]

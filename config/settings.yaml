@@ -1,0 +1,60 @@
+# ============================================================
+# 应用默认配置（非敏感、可入库、随代码评审）
+# 敏感值与环境差异通过 .env / 环境变量覆盖，见 .env.example
+# ============================================================
+
+app:
+  name: office-agent
+  # DEBUG / INFO / WARNING / ERROR
+  log_level: INFO
+
+llm:
+  # OpenAI 兼容协议：换供应商只改 base_url + model + key（阶段二的供应商解耦决策）
+  provider: openai_compatible
+  base_url: https://api.deepseek.com/v1
+  model: deepseek-chat
+  # 空字符串表示"未配置"，由环境变量 OFFICE_AGENT_LLM__API_KEY 注入
+  api_key: ""
+  timeout_seconds: 30
+  max_retries: 2
+  # 办公场景要求稳定、少发散，温度调低
+  temperature: 0.2
+
+embeddings:
+  # 本地 bge-m3：中文效果好、免费、数据不出企业
+  provider: local_bge
+  model_name: BAAI/bge-m3
+  # 预下载的本地权重目录，非空时优先使用（支持离线/内网部署）
+  local_path: models/bge-m3
+  device: cpu
+
+vectorstore:
+  provider: chroma
+  # 相对路径会在配置加载时自动解析为相对项目根目录的绝对路径
+  persist_dir: data/chroma
+  collection_name: office_docs
+
+indexing:
+  # 切片参数（中文按字符数计）：先按标题切 section，超长 section 再窗口切分
+  chunk_size: 500
+  chunk_overlap: 50
+  # 支持的原始文档格式（后续模块再扩展 PDF/Word）
+  supported_extensions:
+    - .md
+    - .txt
+  # 向量化批大小：控制单次推理内存峰值
+  embedding_batch_size: 8
+
+rag:
+  # 每次检索取回的片段数
+  top_k: 4
+  # 场景一验收标准 4：相似度全部低于该阈值时拒答，而不是编造
+  score_threshold: 0.5
+  # Rerank 在模块 2 做基线评测后再决定是否开启（数据驱动选型）
+  rerank_enabled: false
+
+meeting:
+  # 场景二验收标准 4：结构化抽取失败时的最大自愈重试次数
+  extraction_max_retries: 2
+  # 场景二：置信度 + 责任人都满足时才允许自动同步日历
+  sync_confidence_threshold: 0.8

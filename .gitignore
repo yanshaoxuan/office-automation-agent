@@ -1,0 +1,27 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ---- 虚拟环境 ----
+.venv/
+venv/
+
+# ---- 敏感配置（绝不入库）----
+.env
+
+# ---- 运行产物 ----
+logs/
+data/chroma/
+*.sqlite
+*.db
+
+# ---- 本地模型权重（体积大，不入库，用下载脚本获取）----
+models/
+.cache/
+
+# ---- IDE / OS ----
+.vscode/
+.idea/
+.DS_Store
